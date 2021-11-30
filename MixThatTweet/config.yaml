@@ -1,0 +1,9 @@
+# Twitter API Keys
+#   - API Key: SMsqwfYphHSpfsqP3hLE3G9P7
+#   - API Key Secret: UJ1c37Aicx652QrjuluhjP2X3pwTj2aGjGu3kXyZVfKtPVK8lh
+#   - Bearer Token: AAAAAAAAAAAAAAAAAAAAAPFpWQEAAAAA2Be%2FycSMuawVHF4PgbzrdSW4SQk%3D8pPRHPuPTBQlAV9VrciELMwyRWVwubhrHU3xQu9KgdotAc44kW
+
+search_tweets_api:
+  bearer_token: AAAAAAAAAAAAAAAAAAAAAPFpWQEAAAAA2Be%2FycSMuawVHF4PgbzrdSW4SQk%3D8pPRHPuPTBQlAV9VrciELMwyRWVwubhrHU3xQu9KgdotAc44kW
+azure:
+  subscription_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxx
