@@ -3,7 +3,12 @@
 #   - API Key Secret: UJ1c37Aicx652QrjuluhjP2X3pwTj2aGjGu3kXyZVfKtPVK8lh
 #   - Bearer Token: AAAAAAAAAAAAAAAAAAAAAPFpWQEAAAAA2Be%2FycSMuawVHF4PgbzrdSW4SQk%3D8pPRHPuPTBQlAV9VrciELMwyRWVwubhrHU3xQu9KgdotAc44kW
 
+# Microsoft Azure Cognitive Service API Key
+#   - Key: 8a21e78a004d4f3da66b7d5b07f4531b
+#   - Location/Region: centralus
+#   - Endpoint: https://mixthattweet.cognitiveservices.azure.com/
+
 search_tweets_api:
   bearer_token: AAAAAAAAAAAAAAAAAAAAAPFpWQEAAAAA2Be%2FycSMuawVHF4PgbzrdSW4SQk%3D8pPRHPuPTBQlAV9VrciELMwyRWVwubhrHU3xQu9KgdotAc44kW
 azure:
-  subscription_key: xxxxxxxxxxxxxxxxxxxxxxxxxxxx
+  subscription_key: 8a21e78a004d4f3da66b7d5b07f4531b
