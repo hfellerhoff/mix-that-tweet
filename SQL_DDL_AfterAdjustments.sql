@@ -1,6 +1,6 @@
 DELETE FROM CreatedBy;
 DELETE FROM AppUser;
-DELETE FROM Include;
+DELETE FROM Playlist_Includes_Song;
 DELETE FROM Song;
 DELETE FROM Playlist;
 DELETE FROM Tweet;
@@ -120,7 +120,7 @@ INSERT INTO Song
   0.2
 );
 
-INSERT INTO Include
+INSERT INTO Playlist_Includes_Song
 (
   playlist_id,
   song_id

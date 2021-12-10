@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS CreatedBy;
 DROP TABLE IF EXISTS AppUser;
-DROP TABLE IF EXISTS Include;
+DROP TABLE IF EXISTS Playlist_Includes_Song;
 DROP TABLE IF EXISTS Song;
 DROP TABLE IF EXISTS Playlist;
 DROP TABLE IF EXISTS Tweet;
@@ -51,7 +51,7 @@ CREATE TABLE Song
   UNIQUE (song_uri)
 );
 
-CREATE TABLE Include
+CREATE TABLE Playlist_Includes_Song
 (
   playlist_id VARCHAR(50) NOT NULL,
   song_id VARCHAR(50) NOT NULL,
