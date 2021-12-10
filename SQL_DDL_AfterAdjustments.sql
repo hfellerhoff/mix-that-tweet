@@ -8,29 +8,67 @@ DELETE FROM Tweet;
 DROP TABLE CreatedBy;
 DROP TABLE AppUser;
 
+DROP TABLE IF EXISTS Tweeter;
+
+CREATE TABLE Tweeter
+(
+  tweeter_id VARCHAR(50) NOT NULL,
+  tweeter_name VARCHAR(50) NOT NULL,
+  tweeter_username VARCHAR(50) NOT NULL,
+  tweeter_created_at DATE NOT NULL,
+  followers_count INT(25) NOT NULL,
+  following_count INT(25) NOT NULL,
+  tweet_count INT(25) NOT NULL,
+  listed_count INT(25) NOT NULL,
+  PRIMARY KEY (tweeter_id),
+  UNIQUE (tweeter_username)
+);
+
+INSERT INTO Tweeter
+(
+  tweeter_id,
+  tweeter_name,
+  tweeter_username,
+  tweeter_created_at,
+  followers_count,
+  following_count,
+  tweet_count,
+  listed_count
+) VALUES
+(
+  'tweeter1',
+  'T. Weeter',
+  'reteewt',
+  '2021-12-10',
+  1,
+  1,
+  1,
+  1
+);
+
+ALTER TABLE Tweet ADD FOREIGN KEY (author_id) REFERENCES Tweeter(tweeter_id);
+
 INSERT INTO Tweet
 (
   tweet_id,
   tweet_url,
-  user_handle,
-  created_at,
-  impression_count,
-  like_count,
-  reply_count,
+  author_id,
+  tweet_created_at,
+  tweet_text,
   retweet_count,
-  url_link_clicks,
-  user_profile_clicks,
-  positive_sentiment_percentage,
-  neutral_sentiment_percentage,
-  negative_sentiment_percentage
+  reply_count,
+  like_count,
+  quote_count,
+  positive_sentiment_score,
+  neutral_sentiment_score,
+  negative_sentiment_score
 ) VALUES
 (
-  't1',
-  'http://tweet.com/',
-  'someguy',
+  'tweet1',
+  'http://twitter.com/',
+  'tweeter1',
   '2021-11-29',
-  1,
-  1,
+  "It's ya boy uhhhhhh skinny _____.",
   1,
   1,
   1,
@@ -47,9 +85,9 @@ INSERT INTO Playlist
   tweet_id
 ) VALUES 
 (
-  'p1',
-  'http://tweet.com/',
-  't1'
+  'playlist1',
+  'http://playlist.com/',
+  'tweet1'
 );
 
 INSERT INTO Song
@@ -68,7 +106,7 @@ INSERT INTO Song
   valence
 ) VALUES 
 (
-  's1',
+  'song1',
   'http://song.com/',
   0.2,
   0.2,
@@ -88,6 +126,6 @@ INSERT INTO Include
   song_id
 ) VALUES
 (
-  'p1',
-  's1'
+  'playlist1',
+  'song1'
 );
