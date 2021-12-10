@@ -6,18 +6,24 @@ from sqlalchemy import orm
 
 db.Model.metadata.reflect(db.engine)
 
-@login_manager.user_loader
 
+@login_manager.user_loader
 # used for Mix That Tweet
 class Include(db.Model):
-    __table__ = db.Model.metadata.tables['include']
+    __table__ = db.Model.metadata.tables['Playlist_Includes_Song']
+
+
 class Playlist(db.Model):
-    __table__ = db.Model.metadata.tables['playlist']
+    __table__ = db.Model.metadata.tables['Playlist']
+
+
 class Song(db.Model):
-    __table__ = db.Model.metadata.tables['song']
+    __table__ = db.Model.metadata.tables['Song']
+
+
 class Tweet(db.Model):
-    __table__ = db.Model.metadata.tables['tweet']
+    __table__ = db.Model.metadata.tables['Tweet']
 
-    
 
-  
+class Tweeter(db.Model):
+    __table__ = db.Model.metadata.tables['Tweeter']
