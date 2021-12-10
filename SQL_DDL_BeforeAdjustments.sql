@@ -1,25 +1,24 @@
-DROP TABLE IF EXISTS CreatedBy CASCADE;
-DROP TABLE IF EXISTS AppUser CASCADE;
-DROP TABLE IF EXISTS Include CASCADE;
-DROP TABLE IF EXISTS Song CASCADE;
-DROP TABLE IF EXISTS Playlist CASCADE;
-DROP TABLE IF EXISTS Tweet CASCADE;
+DROP TABLE IF EXISTS CreatedBy;
+DROP TABLE IF EXISTS AppUser;
+DROP TABLE IF EXISTS Include;
+DROP TABLE IF EXISTS Song;
+DROP TABLE IF EXISTS Playlist;
+DROP TABLE IF EXISTS Tweet;
 
 CREATE TABLE Tweet
 (
   tweet_id VARCHAR(50) NOT NULL,
   tweet_url VARCHAR(50) NOT NULL,
-  user_handle VARCHAR(50) NOT NULL,
-  created_at DATE NOT NULL,
-  impression_count INT(50) NOT NULL,
-  like_count INT(50) NOT NULL,
-  reply_count INT(50) NOT NULL,
-  retweet_count INT(50) NOT NULL,
-  url_link_clicks INT(50) NOT NULL,
-  user_profile_clicks INT(50) NOT NULL,
-  positive_sentiment_percentage FLOAT(50) NOT NULL,
-  neutral_sentiment_percentage FLOAT(50) NOT NULL,
-  negative_sentiment_percentage FLOAT(50) NOT NULL,
+  author_id VARCHAR(50) NOT NULL,
+  tweet_created_at DATE NOT NULL,
+  tweet_text VARCHAR(280) NOT NULL,
+  retweet_count INT(25) NOT NULL,
+  reply_count INT(25) NOT NULL,
+  like_count INT(25) NOT NULL,
+  quote_count INT(25) NOT NULL,
+  positive_sentiment_score FLOAT(25) NOT NULL,
+  neutral_sentiment_score FLOAT(25) NOT NULL,
+  negative_sentiment_score FLOAT(25) NOT NULL,
   PRIMARY KEY (tweet_id),
   UNIQUE (tweet_url)
 );
@@ -38,16 +37,16 @@ CREATE TABLE Song
 (
   song_id VARCHAR(50) NOT NULL,
   song_uri VARCHAR(50) NOT NULL,
-  acousticness FLOAT(50) NOT NULL,
-  danceability FLOAT(50) NOT NULL,
-  duration_ms INT(50) NOT NULL,
-  energy FLOAT(50) NOT NULL,
-  instrumentalness FLOAT(50) NOT NULL,
-  liveness FLOAT(50) NOT NULL,
-  loudness FLOAT(50) NOT NULL,
-  speechiness FLOAT(50) NOT NULL,
-  tempo FLOAT(50) NOT NULL,
-  valence FLOAT(50) NOT NULL,
+  acousticness FLOAT(25) NOT NULL,
+  danceability FLOAT(25) NOT NULL,
+  duration_ms INT(25) NOT NULL,
+  energy FLOAT(25) NOT NULL,
+  instrumentalness FLOAT(25) NOT NULL,
+  liveness FLOAT(25) NOT NULL,
+  loudness FLOAT(25) NOT NULL,
+  speechiness FLOAT(25) NOT NULL,
+  tempo FLOAT(25) NOT NULL,
+  valence FLOAT(25) NOT NULL,
   PRIMARY KEY (song_id),
   UNIQUE (song_uri)
 );

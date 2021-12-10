@@ -149,20 +149,21 @@ def main():
     like_count = tweet_obj['data'][0]['public_metrics']['like_count']
     quote_count = tweet_obj['data'][0]['public_metrics']['quote_count']
 
-    # User data
-    user_id = tweet_obj['includes']['users'][0]['id']
-    name = tweet_obj['includes']['users'][0]['name']
-    username = tweet_obj['includes']['users'][0]['username']
-    user_created_at = tweet_obj['includes']['users'][0]['created_at']
+    # Tweeter data
+    tweeter_id = tweet_obj['includes']['users'][0]['id']
+    tweeter_name = tweet_obj['includes']['users'][0]['name']
+    tweeter_username = tweet_obj['includes']['users'][0]['username']
+    tweeter_created_at = tweet_obj['includes']['users'][0]['created_at']
     followers_count = tweet_obj['includes']['users'][0]['public_metrics']['followers_count']
     following_count = tweet_obj['includes']['users'][0]['public_metrics']['following_count']
     tweet_count = tweet_obj['includes']['users'][0]['public_metrics']['tweet_count']
     listed_count = tweet_obj['includes']['users'][0]['public_metrics']['listed_count']
 
     # Tweet SQL insertion DDL
-    tweet_insert_ddl = 'INSERT INTO Tweet(tweet_id,tweet_url,tweet_created_at,text,retweet_count,reply_count,like_count,quote_count,positive_sentiment_percentage,neutral_sentiment_percentage,negative_sentiment_percentage) VALUES ("{}","{}","{}","{}",{},{},{},{},{},{},{});'.format(
+    tweet_insert_ddl = 'INSERT INTO Tweet(tweet_id,tweet_url,author_id,tweet_created_at,tweet_text,retweet_count,reply_count,like_count,quote_count,positive_sentiment_score,neutral_sentiment_score,negative_sentiment_score) VALUES ("{}","{}","{}","{}","{}",{},{},{},{},{},{},{});'.format(
         tweet_id,
         tweet_url,
+        tweeter_id,
         tweet_created_at,
         text,
         retweet_count,
@@ -177,18 +178,18 @@ def main():
 
     print()
 
-    # User SQL insertion DDL
-    user_insert_ddl = 'INSERT INTO User(user_id,name,username,user_created_at,followers_count,following_count,tweet_count,listed_count) VALUES ("{}","{}","{}","{}",{},{},{},{});'.format(
-        user_id,
-        name,
-        username,
-        user_created_at,
+    # Tweeter SQL insertion DDL
+    tweeter_insert_ddl = 'INSERT INTO User(tweeter_id,tweeter_name,tweeter_username,tweeter_created_at,followers_count,following_count,tweet_count,listed_count) VALUES ("{}","{}","{}","{}",{},{},{},{});'.format(
+        tweeter_id,
+        tweeter_name,
+        tweeter_username,
+        tweeter_created_at,
         followers_count,
         following_count,
         tweet_count,
         listed_count,
     )
-    print('User SQL insertion DDL:\n', get_ddl(user_insert_ddl))
+    print('Tweeter SQL insertion DDL:\n', get_ddl(tweeter_insert_ddl))
 
     print()
 
