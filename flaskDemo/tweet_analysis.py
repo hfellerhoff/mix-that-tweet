@@ -62,7 +62,7 @@ def analyzeTweet(link):
     )
 
     # Tweeter SQL insertion DDL
-    tweeter_insert_ddl = 'INSERT INTO User(tweeter_id,tweeter_name,tweeter_username,tweeter_created_at,followers_count,following_count,tweet_count,listed_count) VALUES ("{}","{}","{}","{}",{},{},{},{});'.format(
+    tweeter_insert_ddl = 'INSERT INTO Tweeter(tweeter_id,tweeter_name,tweeter_username,tweeter_created_at,followers_count,following_count,tweet_count,listed_count) VALUES ("{}","{}","{}","{}",{},{},{},{});'.format(
         tweeter_id,
         tweeter_name,
         tweeter_username,
