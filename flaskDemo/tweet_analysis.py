@@ -14,6 +14,93 @@ from azure.core.credentials import AzureKeyCredential
 # AZURE_SUBSCRIPTION_KEY = os.environ['AZURE_SUBSCRIPTION_KEY']
 # AZURE_ENDPOINT = os.environ['AZURE_ENDPOINT']
 
+########## Flask Handling ##########
+
+def analyzeTweet(link):
+
+    # API processing and analysis
+    yaml_data = process_yaml()
+    processed_tweet_id = process_tweet_link(link)
+    tweet_obj = twitter_auth_and_connect(yaml_data, create_twitter_url(processed_tweet_id))
+    text = tweet_obj['data'][0]['text']
+    azure_client = authenticate_azure_client(yaml_data)
+    positive_sentiment_score, neutral_sentiment_score, negative_sentiment_score = sentiment_analysis(azure_client, text)
+
+    # Tweet data
+    tweet_id = tweet_obj['data'][0]['id']
+    tweet_url = create_twitter_url(processed_tweet_id)
+    tweet_created_at = tweet_obj['data'][0]['created_at']
+    retweet_count = tweet_obj['data'][0]['public_metrics']['retweet_count']
+    reply_count = tweet_obj['data'][0]['public_metrics']['reply_count']
+    like_count = tweet_obj['data'][0]['public_metrics']['like_count']
+    quote_count = tweet_obj['data'][0]['public_metrics']['quote_count']
+
+    # Tweeter data
+    tweeter_id = tweet_obj['includes']['users'][0]['id']
+    tweeter_name = tweet_obj['includes']['users'][0]['name']
+    tweeter_username = tweet_obj['includes']['users'][0]['username']
+    tweeter_created_at = tweet_obj['includes']['users'][0]['created_at']
+    followers_count = tweet_obj['includes']['users'][0]['public_metrics']['followers_count']
+    following_count = tweet_obj['includes']['users'][0]['public_metrics']['following_count']
+    tweet_count = tweet_obj['includes']['users'][0]['public_metrics']['tweet_count']
+    listed_count = tweet_obj['includes']['users'][0]['public_metrics']['listed_count']
+
+    # Tweet SQL insertion DDL
+    tweet_insert_ddl = 'INSERT INTO Tweet(tweet_id,tweet_url,author_id,tweet_created_at,tweet_text,retweet_count,reply_count,like_count,quote_count,positive_sentiment_score,neutral_sentiment_score,negative_sentiment_score) VALUES ("{}","{}","{}","{}","{}",{},{},{},{},{},{},{});'.format(
+        tweet_id,
+        tweet_url,
+        tweeter_id,
+        tweet_created_at,
+        text,
+        retweet_count,
+        reply_count,
+        like_count,
+        quote_count,
+        positive_sentiment_score,
+        neutral_sentiment_score,
+        negative_sentiment_score,
+    )
+
+    # Tweeter SQL insertion DDL
+    tweeter_insert_ddl = 'INSERT INTO User(tweeter_id,tweeter_name,tweeter_username,tweeter_created_at,followers_count,following_count,tweet_count,listed_count) VALUES ("{}","{}","{}","{}",{},{},{},{});'.format(
+        tweeter_id,
+        tweeter_name,
+        tweeter_username,
+        tweeter_created_at,
+        followers_count,
+        following_count,
+        tweet_count,
+        listed_count,
+    )
+
+    # Tweet object to Spotify audio features
+    time_period = (datetime.date.today() - datetime.date(int(tweet_created_at[0:4]), int(tweet_created_at[5:7]), int(tweet_created_at[8:10]))).days # In days
+    danceability = retweet_count
+    valence = positive_sentiment_score - negative_sentiment_score
+    energy = reply_count
+    tempo = positive_sentiment_score + negative_sentiment_score
+    loudness = calculate_loudness(text)
+    speechiness = calculate_speechiness(text)
+    instrumentalness = like_count / reply_count
+    liveness = calculate_liveness(text)
+    acousticness = calculate_acousticness(text)
+
+    # Tweet object to Spotify audio features mapping
+    tweet_to_audiofeatures_map = {
+        'time_period': time_period,
+        'danceability': danceability,
+        'valence': valence,
+        'energy': energy,
+        'tempo': tempo,
+        'loudness': loudness,
+        'speechiness': speechiness,
+        'instrumentalness': instrumentalness,
+        'liveness': liveness,
+        'acousticness': acousticness
+    }
+
+    return tweet_insert_ddl, tweeter_insert_ddl, tweet_to_audiofeatures_map
+
 ########## API Handling ##########
 
 def process_yaml():
@@ -29,7 +116,6 @@ def process_tweet_link(link):
                 return id[:id.index('?')]
             else:
                 return id
-            
 
 def create_twitter_url(tweet_id):
     id = 'ids=' + str(tweet_id)
@@ -65,11 +151,12 @@ def authenticate_azure_client(yaml_data):
 def sentiment_analysis(client, text):
     doc = [text]
     response = client.analyze_sentiment(documents = doc)[0]
-    overall_sentiment = response.sentiment
+    # overall_sentiment = response.sentiment
     positive_sentiment_score = response.confidence_scores.positive
     neutral_sentiment_score = response.confidence_scores.neutral
     negative_sentiment_score = response.confidence_scores.negative
-    return overall_sentiment, positive_sentiment_score, neutral_sentiment_score, negative_sentiment_score
+    # return overall_sentiment, positive_sentiment_score, neutral_sentiment_score, negative_sentiment_score
+    return positive_sentiment_score, neutral_sentiment_score, negative_sentiment_score
 
 ########## Metric Conversions ##########
 
@@ -127,11 +214,12 @@ def main():
     text = tweet_obj['data'][0]['text']
     # Just commenting below out to save API requests
     azure_client = authenticate_azure_client(yaml_data)
-    overall_sentiment, positive_sentiment_score, neutral_sentiment_score, negative_sentiment_score = sentiment_analysis(azure_client, text)
+    #overall_sentiment, positive_sentiment_score, neutral_sentiment_score, negative_sentiment_score = sentiment_analysis(azure_client, text)
+    positive_sentiment_score, neutral_sentiment_score, negative_sentiment_score = sentiment_analysis(azure_client, text)
 
     print()
 
-    print('Azure text sentiment analysis: {}'.format(overall_sentiment))
+    # print('Azure text sentiment analysis: {}'.format(overall_sentiment))
     print('Sentiment scores: \n\tPositive={} \n\tNeutral={} \n\tNegative={}'.format(
         positive_sentiment_score,
         neutral_sentiment_score,
@@ -224,5 +312,6 @@ def main():
 
     # Perhaps sort subset of matching songs by popularity and choose most popular songs for virability?
 
-if __name__ == '__main__':
-    main()
+# NOTE: If running script as standalone program, uncomment below
+# if __name__ == '__main__':
+#     main()
