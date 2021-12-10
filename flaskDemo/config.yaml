@@ -8,7 +8,8 @@
 #   - Location/Region: centralus
 #   - Endpoint: https://mixthattweet.cognitiveservices.azure.com/
 
-search_tweets_api:
+twitter:
   bearer_token: AAAAAAAAAAAAAAAAAAAAAPFpWQEAAAAA2Be%2FycSMuawVHF4PgbzrdSW4SQk%3D8pPRHPuPTBQlAV9VrciELMwyRWVwubhrHU3xQu9KgdotAc44kW
 azure:
   subscription_key: 8a21e78a004d4f3da66b7d5b07f4531b
+  endpoint: https://mixthattweet.cognitiveservices.azure.com/
