@@ -10,8 +10,8 @@ from datetime import datetime
 from flaskDemo.tweet_analysis import analyzeTweet
 
 
-@app.route("/")
-@app.route("/home")
+@app.route("/", methods=['GET', 'POST'])
+@app.route("/home", methods=['GET', 'POST'])
 def home():
     form = TweetForm()
     if form.validate_on_submit():
