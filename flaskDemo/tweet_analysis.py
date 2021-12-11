@@ -129,6 +129,7 @@ def analyzeTweet(link):
 ########## API Handling ##########
 
 def process_yaml():
+    # Sophie had to change the string inside open() to be the full path to the config.yaml, so line 133 looks a bit different for her
     with open('config.yaml') as file:
         return yaml.safe_load(file)
 
