@@ -13,8 +13,14 @@ class TweetForm(FlaskForm):
     submit=SubmitField('Submit')
 
     # TODO: validation for tweet
-    # def validate_tweet(self, tweet_url):
-        # tweet_url = Tweet.query.filter_by(tweet_url=tweet_url.data).first()
-
-        # if tweet_url:
-
+    def validate_twitter_url(self, tweet_url):
+        if tweet_url.find('https://twitter.com/') != 0:
+            raise ValidationError(
+                'Please provide a link to a Tweet from Twitter.'
+            )
+    
+    tweet_exists = False
+    def does_tweet_exist(self, tweet_url):
+        tweet_url = Tweet.query.filter_by(tweet_url=tweet_url.data).first()
+        if tweet_url:
+            tweet_exists = True
