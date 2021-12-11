@@ -16,23 +16,53 @@ def home():
     form = TweetForm()
     if form.validate_on_submit():
         tweet_dict, tweeter_dict, tweet_to_audiofeatures_map = analyzeTweet(form.tweet_url.data)
-        tweeter = Tweeter(
-            tweeter_id=tweeter_dict["tweeter_id"],
-            tweeter_name=tweeter_dict["tweeter_name"],
-            tweeter_username=tweeter_dict["tweeter_username"],
-            tweeter_created_at=tweeter_dict["tweeter_created_at"],
-            followers_count=tweeter_dict["followers_count"],
-            following_count=tweeter_dict["following_count"],
-            tweet_count=tweeter_dict["tweet_count"],
-            listed_count=tweeter_dict["listed_count"]
-        )
-        db.session.add(tweeter)
-        db.session.commit()
-        flash('Your tweet has been added! You are now able to see your playlist', 'success')
+
+        if form.tweet_exists.data == False:
+            tweeter = Tweeter(
+                tweeter_id=tweeter_dict["tweeter_id"],
+                tweeter_name=tweeter_dict["tweeter_name"],
+                tweeter_username=tweeter_dict["tweeter_username"],
+                tweeter_created_at=tweeter_dict["tweeter_created_at"],
+                followers_count=tweeter_dict["followers_count"],
+                following_count=tweeter_dict["following_count"],
+                tweet_count=tweeter_dict["tweet_count"],
+                listed_count=tweeter_dict["listed_count"]
+            )
+            db.session.add(tweeter)
+            db.session.commit()
+
+            tweet = Tweet(
+                tweet_id=tweet_dict["tweet_id"],
+                tweet_url=tweet_dict["tweet_url"],
+                tweet_created_at=tweet_dict["tweet_created_at"],
+                retweet_count=tweet_dict["retweet_count"],
+                reply_count=tweet_dict["reply_count"],
+                like_count=tweet_dict["like_count"],
+                quote_count=tweet_dict["quote_count"]
+            )
+            db.session.add(tweeter)
+            db.session.commit()
+
+            flash('Your Tweet has been added! You are now able to see your playlist', 'success')
+        else:
+            tweeter = db.session.query(Tweeter).get(tweeter_dict['tweeter_id'])
+            tweeter.followers_count = tweeter_dict["followers_count"],
+            tweeter.following_count = tweeter_dict["following_count"]
+            tweeter.tweet_count = tweeter_dict["tweet_count"]
+            tweeter.listed_count = tweeter_dict["listed_count"]
+            db.session.commit()
+
+            tweet = db.session.query(Tweet).get(tweet_dict['tweet_id'])
+            tweet.retweet_count=tweet_dict["retweet_count"],
+            tweet.reply_count=tweet_dict["reply_count"],
+            tweet.like_count=tweet_dict["like_count"],
+            tweet.quote_count=tweet_dict["quote_count"]
+            db.session.commit()
+
+            flash('Your Tweet has been updated! Your playlist will now reflect these changes.', 'success')
+
         return redirect(url_for('playlist/<playlist_id>'))
     return render_template('home.html', form=form)
-
-   
 
 
 @app.route("/about")
