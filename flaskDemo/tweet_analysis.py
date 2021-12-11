@@ -130,6 +130,7 @@ def analyzeTweet(link):
 
 def process_yaml():
     # Sophie had to change the string inside open() to be the full path to the config.yaml, so line 133 looks a bit different for her
+    # with open('C:\\Users\\cs\\Desktop\\COMP453_VM\\mix-that-tweet\\flaskDemo\\config.yaml') as file:
     with open('config.yaml') as file:
         return yaml.safe_load(file)
 
