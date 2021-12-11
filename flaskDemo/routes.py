@@ -34,13 +34,18 @@ def home():
             tweet = Tweet(
                 tweet_id=tweet_dict["tweet_id"],
                 tweet_url=tweet_dict["tweet_url"],
+                author_id=tweet_dict["author_id"],
                 tweet_created_at=tweet_dict["tweet_created_at"],
+                tweet_text=tweet_dict["tweet_text"],
                 retweet_count=tweet_dict["retweet_count"],
                 reply_count=tweet_dict["reply_count"],
                 like_count=tweet_dict["like_count"],
-                quote_count=tweet_dict["quote_count"]
+                quote_count=tweet_dict["quote_count"],
+                positive_sentiment_score=tweet_dict["positive_sentiment_score"],
+                neutral_sentiment_score=tweet_dict["neutral_sentiment_score"],
+                negative_sentiment_score=tweet_dict["negative_sentiment_score"]
             )
-            db.session.add(tweeter)
+            db.session.add(tweet)
             db.session.commit()
 
             flash('Your Tweet has been added! You are now able to see your playlist', 'success')
@@ -56,7 +61,10 @@ def home():
             tweet.retweet_count=tweet_dict["retweet_count"],
             tweet.reply_count=tweet_dict["reply_count"],
             tweet.like_count=tweet_dict["like_count"],
-            tweet.quote_count=tweet_dict["quote_count"]
+            tweet.quote_count=tweet_dict["quote_count"],
+            tweet.positive_sentiment_score=tweet_dict["positive_sentiment_score"],
+            tweet.neutral_sentiment_score=tweet_dict["neutral_sentiment_score"],
+            tweet.negative_sentiment_score=tweet_dict["negative_sentiment_score"]
             db.session.commit()
 
             flash('Your Tweet has been updated! Your playlist will now reflect these changes.', 'success')

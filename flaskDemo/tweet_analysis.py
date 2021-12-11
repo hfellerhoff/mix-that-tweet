@@ -35,16 +35,6 @@ def analyzeTweet(link):
     like_count = tweet_obj['data'][0]['public_metrics']['like_count']
     quote_count = tweet_obj['data'][0]['public_metrics']['quote_count']
 
-    tweet = {
-        'tweet_id': tweet_obj['data'][0]['id'],
-        'tweet_url': create_twitter_url(processed_tweet_id),
-        'tweet_created_at': tweet_obj['data'][0]['created_at'],
-        'retweet_count': tweet_obj['data'][0]['public_metrics']['retweet_count'],
-        'reply_count': tweet_obj['data'][0]['public_metrics']['reply_count'],
-        'like_count': tweet_obj['data'][0]['public_metrics']['like_count'],
-        'quote_count': tweet_obj['data'][0]['public_metrics']['quote_count']
-    }
-
     # Tweeter data
     tweeter_id = tweet_obj['includes']['users'][0]['id']
     tweeter_name = tweet_obj['includes']['users'][0]['name']
@@ -54,6 +44,21 @@ def analyzeTweet(link):
     following_count = tweet_obj['includes']['users'][0]['public_metrics']['following_count']
     tweet_count = tweet_obj['includes']['users'][0]['public_metrics']['tweet_count']
     listed_count = tweet_obj['includes']['users'][0]['public_metrics']['listed_count']
+
+    tweet = {
+        'tweet_id': tweet_obj['data'][0]['id'],
+        'tweet_url': create_twitter_url(processed_tweet_id),
+        'author_id': tweet_obj['includes']['users'][0]['id'],
+        'tweet_created_at': tweet_obj['data'][0]['created_at'],
+        'tweet_text': text,
+        'retweet_count': tweet_obj['data'][0]['public_metrics']['retweet_count'],
+        'reply_count': tweet_obj['data'][0]['public_metrics']['reply_count'],
+        'like_count': tweet_obj['data'][0]['public_metrics']['like_count'],
+        'quote_count': tweet_obj['data'][0]['public_metrics']['quote_count'],
+        'positive_sentiment_score': positive_sentiment_score,
+        'neutral_sentiment_score': neutral_sentiment_score,
+        'negative_sentiment_score': negative_sentiment_score
+    }
 
     tweeter = {
         'tweeter_id': tweet_obj['includes']['users'][0]['id'],
