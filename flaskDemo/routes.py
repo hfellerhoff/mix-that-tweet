@@ -17,7 +17,7 @@ def home():
     if form.validate_on_submit():
         tweet_dict, tweeter_dict, tweet_to_audiofeatures_map = analyzeTweet(form.tweet_url.data)
 
-        if form.tweet_exists.data == False:
+        if form.tweet_exists == False:
             tweeter = Tweeter(
                 tweeter_id=tweeter_dict["tweeter_id"],
                 tweeter_name=tweeter_dict["tweeter_name"],
