@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
     <div class="content-section">
-      <form>
+      <form method="POST" action="">
         {{ form.hidden_tag() }}
         <fieldset class="form-group">
           <legend class="border-bottom mb-4">Paste Your Tweet URL</legend>
@@ -18,7 +18,7 @@
               </div>
             {% else %}
               {{ form.tweet_url(class="form-control form-control-lg") }}
-            {% endfor %}
+            {% endif %}
           </div>
         </fieldset>
         <div class="form-group">
