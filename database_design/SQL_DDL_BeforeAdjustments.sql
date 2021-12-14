@@ -26,7 +26,7 @@ CREATE TABLE Tweet
 CREATE TABLE Playlist
 (
   playlist_id VARCHAR(50) NOT NULL,
-  playlist_uri VARCHAR(50) NOT NULL,
+  playlist_uri VARCHAR(200) NOT NULL,
   tweet_id VARCHAR(50) NOT NULL,
   PRIMARY KEY (playlist_id),
   FOREIGN KEY (tweet_id) REFERENCES Tweet(tweet_id),

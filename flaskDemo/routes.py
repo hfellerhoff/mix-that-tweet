@@ -106,7 +106,7 @@ def home():
         if not playlist:
             playlist = Playlist(
                 playlist_id=playlist_id,
-                playlist_uri='',
+                playlist_uri=tweet_dict["tweet_url"],
                 tweet_id=tweet_dict["tweet_id"],
             )
             db.session.add(playlist)
@@ -282,7 +282,7 @@ def playlist(playlist_id):
         if not playlist:
             playlist = Playlist(
                 playlist_id=playlist_id,
-                playlist_uri='',
+                playlist_uri=tweet_dict["tweet_url"],
                 tweet_id=tweet_dict["tweet_id"],
             )
             db.session.add(playlist)
