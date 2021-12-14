@@ -126,9 +126,10 @@ INSERT INTO Playlist_Includes_Song
 
 CREATE TABLE Genre
 (
-  seed_genre VARCHAR(50) UNIQUE,
+  seed_genre VARCHAR(50),
   genre_name VARCHAR(50),
-  PRIMARY KEY (seed_genre)
+  PRIMARY KEY (seed_genre),
+  UNIQUE (genre_name)
 );
 
 INSERT INTO Genre (seed_genre, genre_name) VALUES ('pop', 'Pop');
@@ -138,3 +139,18 @@ INSERT INTO Genre (seed_genre, genre_name) VALUES ('disney', 'Disney');
 INSERT INTO Genre (seed_genre, genre_name) VALUES ('turkish', 'Turkish');
 INSERT INTO Genre (seed_genre, genre_name) VALUES ('holidays', 'Holidays');
 INSERT INTO Genre (seed_genre, genre_name) VALUES ('anime', 'Anime');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('british', 'British');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('chicago-house', 'Chicago House');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('classical', 'Classical');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('emo', 'Emo');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('german', 'German');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('edm', 'EDM');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('gospel', 'Gospel');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('hip-hop', 'Hip-Hop');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('honky-tonk', 'Honky Tonk');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('indie-pop', 'Indie Pop');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('jazz', 'Jazz');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('k-pop', 'K-Pop');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('rock-n-roll', 'RocknRoll');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('trance', 'trance');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('opera', 'Opera');
