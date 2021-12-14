@@ -3,8 +3,8 @@
   <div style="display: flex; flex-direction: column">
     <div>
       <blockquote class="twitter-tweet">
-        <p lang="en" dir="ltr">{{ tweet_text }}</p>
-        &mdash; {{ tweet_author }}
+        <p lang="en" dir="ltr">{{ songs[0]['tweet_text'] }}</p>
+        &mdash; {{ songs[0]['tweet_author'] }}
       </blockquote>
       <script
         async
@@ -12,6 +12,7 @@
         charset="utf-8"
       ></script>
     </div>
+    <p>Success! We've created a playlist for you with {{ song_count }} {{ genre }} songs.</p>
     <form method="POST" action="">
       <p>Want some different songs?</p>
       {{ form.hidden_tag() }}
@@ -36,15 +37,15 @@
       </div>
     </form>
     <div class="media-body">
-      {% for song_id in songs %}
-      <iframe
-        src="https://open.spotify.com/embed/track/{{ song_id }}?utm_source=generator"
-        width="100%"
-        height="80"
-        frameborder="0"
-        allowfullscreen=""
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-      ></iframe>
+      {% for song in songs %}
+        <iframe
+          src="https://open.spotify.com/embed/track/{{ song['song_id'] }}?utm_source=generator"
+          width="100%"
+          height="80"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        ></iframe>
       {% endfor %}
     </div>
   </div>
