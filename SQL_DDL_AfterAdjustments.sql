@@ -90,34 +90,27 @@ INSERT INTO Playlist
   'tweet1'
 );
 
+ALTER TABLE Song 
+  DROP COLUMN acousticness, 
+  DROP COLUMN danceability,
+  DROP COLUMN energy,
+  DROP COLUMN instrumentalness,
+  DROP COLUMN liveness,
+  DROP COLUMN loudness,
+  DROP COLUMN speechiness,
+  DROP COLUMN tempo,
+  DROP COLUMN valence;
+
 INSERT INTO Song
 (
   song_id,
   song_uri,
-  acousticness,
-  danceability,
-  duration_ms,
-  energy,
-  instrumentalness,
-  liveness,
-  loudness,
-  speechiness,
-  tempo,
-  valence
+  duration_ms
 ) VALUES 
 (
   'song1',
   'http://song.com/',
-  0.2,
-  0.2,
-  123,
-  0.2,
-  0.2,
-  0.2,
-  0.2,
-  0.2,
-  0.2,
-  0.2
+  123
 );
 
 INSERT INTO Playlist_Includes_Song
