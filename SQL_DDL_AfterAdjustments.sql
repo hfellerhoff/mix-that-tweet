@@ -93,7 +93,7 @@ INSERT INTO Playlist
 ALTER TABLE Song 
   DROP COLUMN acousticness, 
   DROP COLUMN danceability,
-  DROP COLUMN duration_ms
+  DROP COLUMN duration_ms,
   DROP COLUMN energy,
   DROP COLUMN instrumentalness,
   DROP COLUMN liveness,
