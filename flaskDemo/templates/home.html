@@ -21,7 +21,22 @@
             {% endif %}
           </div>
         </fieldset>
-        <div class="form-group">
+          <div class="form-group">
+              <!-- Form Logic for Tweet URL Goes Here -->
+              {{ form.genre.label(class="form-control-label") }}
+              <!-- Error Handling Goes Here -->
+              {% if form.genre.errors %}
+                {{ form.genre(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                  {% for error in form.genre.errors %}
+                    <span>{{ error }}</span>
+                  {% endfor %}
+                </div>
+              {% else %}
+                {{ form.genre(class="form-control form-control-lg") }}
+              {% endif %}
+            </div>          
+          <div class="form-group">
           {{ form.submit(class="btn btn-outline-info") }}
         </div>
       </form>

@@ -95,7 +95,7 @@ def home():
                 'Your Tweet has been updated! Your playlist will now reflect these changes.', 'success')
 
         # getting recommendations
-        tracks = get_recommendations(tweet_to_audiofeatures_map)
+        tracks = get_recommendations(tweet_to_audiofeatures_map, genre=form.genre.data)
 
         # track.id
         # track.uri
@@ -128,7 +128,7 @@ def home():
         # db.session.commit()
         # add songs/playlist to playlist_includes_song
         song_id_string = ','.join(song_ids)
-        return redirect(url_for('playlist', song_ids=song_id_string, tweet_url=tweet_dict["tweet_url"], tweet_text=tweet_dict["tweet_text"], tweet_author=tweeter_dict["tweeter_name"]))
+        return redirect(url_for('playlist', genre=form.genre.data, song_ids=song_id_string, tweet_url=tweet_dict["tweet_url"], tweet_text=tweet_dict["tweet_text"], tweet_author=tweeter_dict["tweeter_name"]))
     return render_template('home.html', form=form, title='Mix That Tweet')
 
 
@@ -226,7 +226,7 @@ def playlist():
                 'Your Tweet has been updated! Your playlist will now reflect these changes.', 'success')
 
         # getting recommendations
-        tracks = get_recommendations(tweet_to_audiofeatures_map)
+        tracks = get_recommendations(tweet_to_audiofeatures_map, genre=form.genre.data)
 
         # track.id
         # track.uri
@@ -259,7 +259,7 @@ def playlist():
         # db.session.commit()
         # add songs/playlist to playlist_includes_song
         song_id_string = ','.join(song_ids)
-        return redirect(url_for('playlist', song_ids=song_id_string, tweet_url=tweet_dict["tweet_url"], tweet_text=tweet_dict["tweet_text"], tweet_author=tweeter_dict["tweeter_name"]))
+        return redirect(url_for('playlist', genre=form.genre.data, song_ids=song_id_string, tweet_url=tweet_dict["tweet_url"], tweet_text=tweet_dict["tweet_text"], tweet_author=tweeter_dict["tweeter_name"]))
     
     return render_template('sad_playlist.html', form=form, songs=songs, tweet_text=tweet_text, tweet_author=tweet_author)
 

@@ -1,5 +1,5 @@
 from datetime import datetime
-from flaskDemo import db #, login_manager
+from flaskDemo import db  # , login_manager
 from flask_login import UserMixin
 from functools import partial
 from sqlalchemy import orm
@@ -20,15 +20,17 @@ tables = {
     'song': 'Song',
     'tweet': 'Tweet',
     'tweeter': 'Tweeter',
+    'genre': 'Genre',
 }
 
 if areTablesLowercase:
     for row in tables:
         tables[row] = tables[row].lower()
 
-
 # @login_manager.user_loader
 # used for Mix That Tweet
+
+
 class Include(db.Model):
     __table__ = db.Model.metadata.tables[tables['playlist_includes_song']]
 
@@ -47,3 +49,10 @@ class Tweet(db.Model):
 
 class Tweeter(db.Model):
     __table__ = db.Model.metadata.tables[tables['tweeter']]
+
+# Full list of genres available:
+# https://gist.github.com/drumnation/91a789da6f17f2ee20db8f55382b6653
+
+
+class Genre(db.Model):
+    __table__ = db.Model.metadata.tables[tables['genre']]
