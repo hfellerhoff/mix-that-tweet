@@ -9,7 +9,7 @@ from wtforms.fields.html5 import DateField
 
 genres_db = Genre.query.all()
 genre_choices = [(row.seed_genre, row.genre_name) for row in genres_db]
-genre_choices.reverse()
+genre_choices.sort(reverse=True)
 
 
 class TweetForm(FlaskForm):

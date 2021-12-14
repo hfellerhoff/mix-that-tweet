@@ -18,7 +18,7 @@ def home():
     if form.validate_on_submit():
         tweet_dict, tweeter_dict, tweet_to_audiofeatures_map = analyzeTweet(
             form.tweet_url.data)
-        
+
         if not tweet_dict:
             flash('Tweet is private. Try another Tweet!', 'error')
             return render_template('home.html', form=form, title='Mix That Tweet')
@@ -95,13 +95,40 @@ def home():
                 'Your Tweet has been updated! Your playlist will now reflect these changes.', 'success')
 
         # getting recommendations
-        tracks = get_recommendations(tweet_to_audiofeatures_map, genre=form.genre.data)
+        tracks = get_recommendations(
+            tweet_to_audiofeatures_map, genre=form.genre.data)
+        
+        playlist_id='p_' + tweet_dict["tweet_id"]
 
-        # track.id
-        # track.uri
-        # track.name
-        # track.duration_ms
 
+        playlist = Playlist.query.filter_by(playlist_id=playlist_id).first()
+        # create playlist
+        if not playlist:
+            playlist = Playlist(
+                playlist_id=playlist_id,
+                playlist_uri='',
+                tweet_id=tweet_dict["tweet_id"],
+            )
+            db.session.add(playlist)
+            db.session.commit()
+        
+        playlist_includes_songs = Include.query.filter_by(playlist_id=playlist_id).all()
+        old_song_ids = []
+        
+        # Clear the playlist and delete pre-existing songs
+        for included_song in playlist_includes_songs:
+            Include.query.filter_by(playlist_id=playlist_id).delete()
+            old_song_ids.append(included_song.song_id)
+        Include.query.filter_by(playlist_id=playlist_id).delete()
+        db.session.commit()
+        
+        # Delete songs not being referenced in other playlists
+        for song_id in old_song_ids:
+            song_in_another_playlist = Include.query.filter_by(song_id=song_id).first()
+            if not song_in_another_playlist:
+                Song.query.filter_by(song_id=song_id).delete()
+        db.session.commit()
+        
         # adding songs
         songs = list()
         song_ids = list()
@@ -117,18 +144,16 @@ def home():
             songs.append(song)
             song_ids.append(track['id'])
         db.session.commit()
-
-        # create playlist
-        # playlist = Playlist(
-        #     playlist_id='p_' + tweet_dict["tweet_id"],
-        #     playlist_uri=track.uri,
-        #     tweet_id=track.duration_ms,
-        # )
-        # db.session.add(playlist)
-        # db.session.commit()
-        # add songs/playlist to playlist_includes_song
-        song_id_string = ','.join(song_ids)
-        return redirect(url_for('playlist', genre=form.genre.data, song_ids=song_id_string, tweet_url=tweet_dict["tweet_url"], tweet_text=tweet_dict["tweet_text"], tweet_author=tweeter_dict["tweeter_name"]))
+        
+        for song_id in song_ids:
+            playlist_includes_song = Include(
+                playlist_id=playlist_id,
+                song_id=song_id
+            )
+            db.session.add(playlist_includes_song)
+        db.session.commit()
+        
+        return redirect(url_for('playlist', playlist_id=playlist_id, genre=form.genre.data))
     return render_template('home.html', form=form, title='Mix That Tweet')
 
 
@@ -138,18 +163,40 @@ def about():
 
 
 # Route for showing the playlist of songs created from entering the tweet url
-@app.route("/playlist", methods=['GET', 'POST'])
-def playlist():
+@app.route("/playlist/<playlist_id>", methods=['GET', 'POST'])
+def playlist(playlist_id):
     form = TweetRemixForm()
-    songs = request.args.get('song_ids').split(',')
-    tweet_text = request.args.get('tweet_text')
-    tweet_author = request.args.get('tweet_author')
-    tweet_url = request.args.get('tweet_url')
     
-    if form.validate_on_submit():
-        tweet_dict, tweeter_dict, tweet_to_audiofeatures_map = analyzeTweet(
-            tweet_url)
+    genre = request.args.get('genre')
+    song_count = Include.query.filter_by(playlist_id=playlist_id).count()
+    
+    # our beloved join query
+    join_data = Include.query.join(Song, Include.song_id == Song.song_id) \
+        .add_columns(Song.song_id, Song.song_uri) \
+        .join(Playlist, Playlist.playlist_id == Include.playlist_id) \
+        .add_columns(Playlist.tweet_id) \
+        .join(Tweet, Playlist.tweet_id == Tweet.tweet_id) \
+        .add_columns(Tweet.tweet_url, Tweet.tweet_text, Tweet.author_id) \
+        .join(Tweeter, Tweet.author_id == Tweeter.tweeter_id) \
+        .add_columns(Tweeter.tweeter_username) \
+        .filter(Include.playlist_id == playlist_id)
+                    
+    songs = []
+    for entry in join_data:
+        song = dict()
+        song['song_id'] = entry[1]
+        song['song_uri'] = entry[2]
+        song['tweet_url'] = entry[4]
+        song['tweet_text'] = entry[5]
+        song['tweet_author'] = entry[7]
         
+        print(song)
+        
+        songs.append(song)
+
+    if form.validate_on_submit():
+        tweet_dict, tweeter_dict, tweet_to_audiofeatures_map = analyzeTweet(songs[0]['tweet_url'])
+
         if not tweet_dict:
             flash('That Tweet is likely private. Try another Tweet!', 'error')
             return redirect(url_for('home'))
@@ -226,13 +273,40 @@ def playlist():
                 'Your Tweet has been updated! Your playlist will now reflect these changes.', 'success')
 
         # getting recommendations
-        tracks = get_recommendations(tweet_to_audiofeatures_map, genre=form.genre.data)
+        tracks = get_recommendations(
+            tweet_to_audiofeatures_map, genre=form.genre.data)
+        
+        playlist_id='p_' + tweet_dict["tweet_id"]
 
-        # track.id
-        # track.uri
-        # track.name
-        # track.duration_ms
 
+        playlist = Playlist.query.filter_by(playlist_id=playlist_id).first()
+        # create playlist
+        if not playlist:
+            playlist = Playlist(
+                playlist_id=playlist_id,
+                playlist_uri='',
+                tweet_id=tweet_dict["tweet_id"],
+            )
+            db.session.add(playlist)
+            db.session.commit()
+        
+        playlist_includes_songs = Include.query.filter_by(playlist_id=playlist_id).all()
+        old_song_ids = []
+        
+        # Clear the playlist and delete pre-existing songs
+        for included_song in playlist_includes_songs:
+            Include.query.filter_by(playlist_id=playlist_id).delete()
+            old_song_ids.append(included_song.song_id)
+        Include.query.filter_by(playlist_id=playlist_id).delete()
+        db.session.commit()
+        
+        # Delete songs not being referenced in other playlists
+        for song_id in old_song_ids:
+            song_in_another_playlist = Include.query.filter_by(song_id=song_id).first()
+            if not song_in_another_playlist:
+                Song.query.filter_by(song_id=song_id).delete()
+        db.session.commit()
+        
         # adding songs
         songs = list()
         song_ids = list()
@@ -248,20 +322,18 @@ def playlist():
             songs.append(song)
             song_ids.append(track['id'])
         db.session.commit()
+        
+        for song_id in song_ids:
+            playlist_includes_song = Include(
+                playlist_id=playlist_id,
+                song_id=song_id
+            )
+            db.session.add(playlist_includes_song)
+        db.session.commit()
+        
+        return redirect(url_for('playlist', playlist_id=playlist_id, genre=form.genre.data))
 
-        # create playlist
-        # playlist = Playlist(
-        #     playlist_id='p_' + tweet_dict["tweet_id"],
-        #     playlist_uri=track.uri,
-        #     tweet_id=track.duration_ms,
-        # )
-        # db.session.add(playlist)
-        # db.session.commit()
-        # add songs/playlist to playlist_includes_song
-        song_id_string = ','.join(song_ids)
-        return redirect(url_for('playlist', genre=form.genre.data, song_ids=song_id_string, tweet_url=tweet_dict["tweet_url"], tweet_text=tweet_dict["tweet_text"], tweet_author=tweeter_dict["tweeter_name"]))
-    
-    return render_template('sad_playlist.html', form=form, songs=songs, tweet_text=tweet_text, tweet_author=tweet_author)
+    return render_template('sad_playlist.html', form=form, songs=songs, song_count=song_count, genre=genre)
 
 # @app.route("/playlist/<playlist_id>")
 # def playlist(playlist_id):
