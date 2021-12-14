@@ -8,7 +8,7 @@ DROP TABLE IF EXISTS Tweet;
 CREATE TABLE Tweet
 (
   tweet_id VARCHAR(50) NOT NULL,
-  tweet_url VARCHAR(50) NOT NULL,
+  tweet_url VARCHAR(200) NOT NULL,
   author_id VARCHAR(50) NOT NULL,
   tweet_created_at DATE NOT NULL,
   tweet_text VARCHAR(280) NOT NULL,
