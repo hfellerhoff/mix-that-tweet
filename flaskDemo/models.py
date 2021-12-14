@@ -1,5 +1,5 @@
 from datetime import datetime
-from flaskDemo import db, login_manager
+from flaskDemo import db #, login_manager
 from flask_login import UserMixin
 from functools import partial
 from sqlalchemy import orm
@@ -27,7 +27,7 @@ if areTablesLowercase:
         tables[row] = tables[row].lower()
 
 
-@login_manager.user_loader
+# @login_manager.user_loader
 # used for Mix That Tweet
 class Include(db.Model):
     __table__ = db.Model.metadata.tables[tables['playlist_includes_song']]

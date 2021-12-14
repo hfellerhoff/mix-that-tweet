@@ -1,8 +1,13 @@
 import pandas as pd
 import requests
 import json
-import yaml
+# import yaml
 import datetime
+import os
+import re
+
+from dotenv import load_dotenv
+load_dotenv()
 
 # pip install azure-ai-textanalytics
 from azure.ai.textanalytics import TextAnalyticsClient
@@ -10,136 +15,163 @@ from azure.core.credentials import AzureKeyCredential
 
 ########## API Keys and Tokens ##########
 
-# TWITTER_BEARER_TOKEN = os.environ['TWITTER_BEARER_TOKEN']
-# AZURE_SUBSCRIPTION_KEY = os.environ['AZURE_SUBSCRIPTION_KEY']
-# AZURE_ENDPOINT = os.environ['AZURE_ENDPOINT']
+TWITTER_BEARER_TOKEN = os.environ['TWITTER_BEARER_TOKEN']
+AZURE_SUBSCRIPTION_KEY = os.environ['AZURE_SUBSCRIPTION_KEY']
+AZURE_ENDPOINT = os.environ['AZURE_ENDPOINT']
 
 ########## Flask Handling ##########
 
 def analyzeTweet(link):
 
     # API processing and analysis
-    yaml_data = process_yaml()
+    # yaml_data = process_yaml()
     processed_tweet_id = process_tweet_link(link)
-    tweet_obj = twitter_auth_and_connect(yaml_data, create_twitter_url(processed_tweet_id))
-    text = tweet_obj['data'][0]['text']
-    azure_client = authenticate_azure_client(yaml_data)
-    positive_sentiment_score, neutral_sentiment_score, negative_sentiment_score = sentiment_analysis(azure_client, text)
+    # tweet_obj = twitter_auth_and_connect(yaml_data, create_twitter_url(processed_tweet_id))
+    tweet_obj = twitter_auth_and_connect(create_twitter_url(processed_tweet_id))
+    
+    print(tweet_obj)
+    
+    if 'errors' in tweet_obj:
+        tweet = None
+        tweeter = None
+        tweet_to_audiofeatures_map = None
+        return tweet, tweeter, tweet_to_audiofeatures_map
+    else:
+        text = tweet_obj['data'][0]['text']
+        # azure_client = authenticate_azure_client(yaml_data)
+        azure_client = authenticate_azure_client()
+        positive_sentiment_score, neutral_sentiment_score, negative_sentiment_score = sentiment_analysis(azure_client, text)
 
-    # Tweet data
-    tweet_id = tweet_obj['data'][0]['id']
-    tweet_url = create_twitter_url(processed_tweet_id)
-    tweet_created_at = tweet_obj['data'][0]['created_at']
-    retweet_count = tweet_obj['data'][0]['public_metrics']['retweet_count']
-    reply_count = tweet_obj['data'][0]['public_metrics']['reply_count']
-    like_count = tweet_obj['data'][0]['public_metrics']['like_count']
-    quote_count = tweet_obj['data'][0]['public_metrics']['quote_count']
+        # Tweet data
+        tweet_id = tweet_obj['data'][0]['id']
+        tweet_url = create_twitter_url(processed_tweet_id)
+        tweet_created_at = tweet_obj['data'][0]['created_at']
+        retweet_count = tweet_obj['data'][0]['public_metrics']['retweet_count']
+        reply_count = tweet_obj['data'][0]['public_metrics']['reply_count']
+        like_count = tweet_obj['data'][0]['public_metrics']['like_count']
+        quote_count = tweet_obj['data'][0]['public_metrics']['quote_count']
 
-    # Tweeter data
-    tweeter_id = tweet_obj['includes']['users'][0]['id']
-    tweeter_name = tweet_obj['includes']['users'][0]['name']
-    tweeter_username = tweet_obj['includes']['users'][0]['username']
-    tweeter_created_at = tweet_obj['includes']['users'][0]['created_at']
-    followers_count = tweet_obj['includes']['users'][0]['public_metrics']['followers_count']
-    following_count = tweet_obj['includes']['users'][0]['public_metrics']['following_count']
-    tweet_count = tweet_obj['includes']['users'][0]['public_metrics']['tweet_count']
-    listed_count = tweet_obj['includes']['users'][0]['public_metrics']['listed_count']
+        # Tweeter data
+        tweeter_id = tweet_obj['includes']['users'][0]['id']
+        tweeter_name = tweet_obj['includes']['users'][0]['name']
+        tweeter_username = tweet_obj['includes']['users'][0]['username']
+        tweeter_created_at = tweet_obj['includes']['users'][0]['created_at']
+        followers_count = tweet_obj['includes']['users'][0]['public_metrics']['followers_count']
+        following_count = tweet_obj['includes']['users'][0]['public_metrics']['following_count']
+        tweet_count = tweet_obj['includes']['users'][0]['public_metrics']['tweet_count']
+        listed_count = tweet_obj['includes']['users'][0]['public_metrics']['listed_count']
+        
+        emoji_pattern = re.compile("["
+            u"\U0001F600-\U0001F64F"  # emoticons
+            u"\U0001F300-\U0001F5FF"  # symbols & pictographs
+            u"\U0001F680-\U0001F6FF"  # transport & map symbols
+            u"\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                            "]+", flags=re.UNICODE)
+        
+        tweeter_name = emoji_pattern.sub(r'', tweeter_name)
 
-    tweet = {
-        'tweet_id': tweet_obj['data'][0]['id'],
-        'tweet_url': create_twitter_url(processed_tweet_id),
-        'author_id': tweet_obj['includes']['users'][0]['id'],
-        'tweet_created_at': tweet_obj['data'][0]['created_at'],
-        'tweet_text': text,
-        'retweet_count': tweet_obj['data'][0]['public_metrics']['retweet_count'],
-        'reply_count': tweet_obj['data'][0]['public_metrics']['reply_count'],
-        'like_count': tweet_obj['data'][0]['public_metrics']['like_count'],
-        'quote_count': tweet_obj['data'][0]['public_metrics']['quote_count'],
-        'positive_sentiment_score': positive_sentiment_score,
-        'neutral_sentiment_score': neutral_sentiment_score,
-        'negative_sentiment_score': negative_sentiment_score
-    }
+        tweet = {
+            'tweet_id': tweet_obj['data'][0]['id'],
+            'tweet_url': link, #create_twitter_url(processed_tweet_id),
+            'author_id': tweet_obj['includes']['users'][0]['id'],
+            'tweet_created_at': tweet_obj['data'][0]['created_at'][0:10],
+            'tweet_text': text,
+            'retweet_count': tweet_obj['data'][0]['public_metrics']['retweet_count'],
+            'reply_count': tweet_obj['data'][0]['public_metrics']['reply_count'],
+            'like_count': tweet_obj['data'][0]['public_metrics']['like_count'],
+            'quote_count': tweet_obj['data'][0]['public_metrics']['quote_count'],
+            'positive_sentiment_score': positive_sentiment_score,
+            'neutral_sentiment_score': neutral_sentiment_score,
+            'negative_sentiment_score': negative_sentiment_score
+        }
 
-    tweeter = {
-        'tweeter_id': tweet_obj['includes']['users'][0]['id'],
-        'tweeter_name': tweet_obj['includes']['users'][0]['name'],
-        'tweeter_username': tweet_obj['includes']['users'][0]['username'],
-        'tweeter_created_at': tweet_obj['includes']['users'][0]['created_at'],
-        'followers_count': tweet_obj['includes']['users'][0]['public_metrics']['followers_count'],
-        'following_count': tweet_obj['includes']['users'][0]['public_metrics']['following_count'],
-        'tweet_count': tweet_obj['includes']['users'][0]['public_metrics']['tweet_count'],
-        'listed_count': tweet_obj['includes']['users'][0]['public_metrics']['listed_count']
-    }
+        tweeter = {
+            'tweeter_id': tweet_obj['includes']['users'][0]['id'],
+            'tweeter_name': tweeter_name,
+            'tweeter_username': tweet_obj['includes']['users'][0]['username'],
+            'tweeter_created_at': tweet_obj['includes']['users'][0]['created_at'][0:10],
+            'followers_count': tweet_obj['includes']['users'][0]['public_metrics']['followers_count'],
+            'following_count': tweet_obj['includes']['users'][0]['public_metrics']['following_count'],
+            'tweet_count': tweet_obj['includes']['users'][0]['public_metrics']['tweet_count'],
+            'listed_count': tweet_obj['includes']['users'][0]['public_metrics']['listed_count']
+        }
 
-    # Tweet SQL insertion DDL
-    tweet_insert_ddl = 'INSERT INTO Tweet(tweet_id,tweet_url,author_id,tweet_created_at,tweet_text,retweet_count,reply_count,like_count,quote_count,positive_sentiment_score,neutral_sentiment_score,negative_sentiment_score) VALUES ("{}","{}","{}","{}","{}",{},{},{},{},{},{},{});'.format(
-        tweet_id,
-        tweet_url,
-        tweeter_id,
-        tweet_created_at,
-        text,
-        retweet_count,
-        reply_count,
-        like_count,
-        quote_count,
-        positive_sentiment_score,
-        neutral_sentiment_score,
-        negative_sentiment_score,
-    )
+        # Tweet SQL insertion DDL
+        tweet_insert_ddl = 'INSERT INTO Tweet(tweet_id,tweet_url,author_id,tweet_created_at,tweet_text,retweet_count,reply_count,like_count,quote_count,positive_sentiment_score,neutral_sentiment_score,negative_sentiment_score) VALUES ("{}","{}","{}","{}","{}",{},{},{},{},{},{},{});'.format(
+            tweet_id,
+            tweet_url,
+            tweeter_id,
+            tweet_created_at,
+            text,
+            retweet_count,
+            reply_count,
+            like_count,
+            quote_count,
+            positive_sentiment_score,
+            neutral_sentiment_score,
+            negative_sentiment_score,
+        )
 
-    # Tweeter SQL insertion DDL
-    tweeter_insert_ddl = 'INSERT INTO Tweeter(tweeter_id,tweeter_name,tweeter_username,tweeter_created_at,followers_count,following_count,tweet_count,listed_count) VALUES ("{}","{}","{}","{}",{},{},{},{});'.format(
-        tweeter_id,
-        tweeter_name,
-        tweeter_username,
-        tweeter_created_at,
-        followers_count,
-        following_count,
-        tweet_count,
-        listed_count,
-    )
+        # Tweeter SQL insertion DDL
+        tweeter_insert_ddl = 'INSERT INTO Tweeter(tweeter_id,tweeter_name,tweeter_username,tweeter_created_at,followers_count,following_count,tweet_count,listed_count) VALUES ("{}","{}","{}","{}",{},{},{},{});'.format(
+            tweeter_id,
+            tweeter_name,
+            tweeter_username,
+            tweeter_created_at,
+            followers_count,
+            following_count,
+            tweet_count,
+            listed_count,
+        )
 
-    # Tweet object to Spotify audio features
-    time_period = (datetime.date.today() - datetime.date(int(tweet_created_at[0:4]), int(tweet_created_at[5:7]), int(tweet_created_at[8:10]))).days # In days
-    danceability = retweet_count
-    valence = positive_sentiment_score - negative_sentiment_score
-    energy = reply_count
-    tempo = positive_sentiment_score + negative_sentiment_score
-    loudness = calculate_loudness(text)
-    speechiness = calculate_speechiness(text)
-    instrumentalness = like_count / reply_count
-    liveness = calculate_liveness(text)
-    acousticness = calculate_acousticness(text)
+        # Tweet object to Spotify audio features
+        danceability = retweet_count / (followers_count / 200) # highest retweet count to date
+        valence = positive_sentiment_score
+        
+        instrumental_modifier = neutral_sentiment_score if neutral_sentiment_score is 0 else 0.01
+        instrumentalness = reply_count / (like_count * instrumental_modifier)
+        
+        time_period = (datetime.date.today() - datetime.date(int(tweet_created_at[0:4]), int(tweet_created_at[5:7]), int(tweet_created_at[8:10]))).days # In days
+        energy = (reply_count + like_count) / followers_count 
+        tempo = positive_sentiment_score + negative_sentiment_score
+        loudness = calculate_loudness(text)
+        speechiness = calculate_speechiness(text)
+        liveness = calculate_liveness(text)
+        acousticness = calculate_acousticness(text)
+        popularity = followers_count / 1000000
 
-    # Tweet object to Spotify audio features mapping
-    tweet_to_audiofeatures_map = {
-        'time_period': time_period,
-        'danceability': danceability,
-        'valence': valence,
-        'energy': energy,
-        'tempo': tempo,
-        'loudness': loudness,
-        'speechiness': speechiness,
-        'instrumentalness': instrumentalness,
-        'liveness': liveness,
-        'acousticness': acousticness
-    }
 
-    # For returning Strings and dictionary
-    # return tweet_insert_ddl, tweeter_insert_ddl, tweet_to_audiofeatures_map
+        # Tweet object to Spotify audio features mapping
+        tweet_to_audiofeatures_map = {
+            'time_period': time_period,
+            'danceability': danceability,
+            'valence': valence,
+            'energy': energy,
+            'tempo': tempo,
+            'loudness': loudness,
+            'speechiness': speechiness,
+            'instrumentalness': instrumentalness,
+            'liveness': liveness,
+            'acousticness': acousticness,
+            'popularity': popularity
+        }
 
-    # For returning dictionaries
-    return tweet, tweeter, tweet_to_audiofeatures_map
+        # For returning Strings and dictionary
+        # return tweet_insert_ddl, tweeter_insert_ddl, tweet_to_audiofeatures_map
+
+        # For returning dictionaries
+        return tweet, tweeter, tweet_to_audiofeatures_map
 
 ########## API Handling ##########
 
-def process_yaml():
+# def process_yaml():
     # Sophie had to change the string inside open() to be the full path to the config.yaml, so line 133 looks a bit different for her
     # with open('C:\\Users\\cs\\Desktop\\COMP453_VM\\mix-that-tweet\\flaskDemo\\config.yaml') as file:
-    with open('config.yaml') as file:
-        return yaml.safe_load(file)
+    # with open('config.yaml') as file:
+    #     return yaml.safe_load(file)
 
 def process_tweet_link(link):
+    print(link)
     link = link.split('/')
     for index, component in enumerate(link):
         if component == 'status':
@@ -162,21 +194,23 @@ def create_twitter_url(tweet_id):
     )
     return url
 
-def twitter_auth_and_connect(yaml_data, url):
+# def twitter_auth_and_connect(yaml_data, url):
+def twitter_auth_and_connect(url):
     headers = {
-        # 'Authorization': 'Bearer {}'.format(TWITTER_BEARER_TOKEN), # ENV
-        'Authorization': 'Bearer {}'.format(yaml_data['twitter']['bearer_token']), # YAML
+        'Authorization': 'Bearer {}'.format(TWITTER_BEARER_TOKEN), # ENV
+        # 'Authorization': 'Bearer {}'.format(yaml_data['twitter']['bearer_token']), # YAML
         'User-Agent': 'v2TweetLookupPython'
     }
     response = requests.request('GET', url, headers=headers)
     return response.json()
 
-def authenticate_azure_client(yaml_data):
-    # ta_credential = AzureKeyCredential(AZURE_SUBSCRIPTION_KEY) # ENV
-    ta_credential = AzureKeyCredential(yaml_data['azure']['subscription_key']) # YAML
+# def authenticate_azure_client(yaml_data):
+def authenticate_azure_client():
+    ta_credential = AzureKeyCredential(AZURE_SUBSCRIPTION_KEY) # ENV
+    # ta_credential = AzureKeyCredential(yaml_data['azure']['subscription_key']) # YAML
     text_analytics_client = TextAnalyticsClient(
-            # endpoint = AZURE_ENDPOINT, # ENV
-            endpoint = yaml_data['azure']['endpoint'], # YAML
+            endpoint = AZURE_ENDPOINT, # ENV
+            # endpoint = yaml_data['azure']['endpoint'], # YAML
             credential = ta_credential)
     return text_analytics_client
 
@@ -216,7 +250,7 @@ def calculate_liveness(text):
 def calculate_acousticness(text):
     spaces_count = 0
     for character in text:
-        if not character.isspace():
+        if character.isspace():
             spaces_count += 1
     return spaces_count / len(text)
 
@@ -234,18 +268,20 @@ def pretty(doc):
 ########## Driver ##########
 
 def main():
-    yaml_data = process_yaml()
+    # yaml_data = process_yaml()
 
     testLink1 = "https://twitter.com/i/web/status/1465762217480097794?s=20"
     testLink2 = "https://twitter.com/FarhangNamdar/status/1230554753182003203?ref_src=twsrc%5Etfw"
     processed_tweet_id = process_tweet_link(testLink1)
 
-    tweet_obj = twitter_auth_and_connect(yaml_data, create_twitter_url(processed_tweet_id))
+    # tweet_obj = twitter_auth_and_connect(yaml_data, create_twitter_url(processed_tweet_id))
+    tweet_obj = twitter_auth_and_connect(create_twitter_url(processed_tweet_id))
     print('\nTweet lookup:\n', pretty(tweet_obj))
 
     text = tweet_obj['data'][0]['text']
     # Just commenting below out to save API requests
-    azure_client = authenticate_azure_client(yaml_data)
+    # azure_client = authenticate_azure_client(yaml_data)
+    azure_client = authenticate_azure_client()
     #overall_sentiment, positive_sentiment_score, neutral_sentiment_score, negative_sentiment_score = sentiment_analysis(azure_client, text)
     positive_sentiment_score, neutral_sentiment_score, negative_sentiment_score = sentiment_analysis(azure_client, text)
 
@@ -324,6 +360,7 @@ def main():
     instrumentalness = like_count / reply_count
     liveness = calculate_liveness(text)
     acousticness = calculate_acousticness(text)
+    popularity = followers_count / 1000000
 
     # Tweet object to Spotify audio features mapping
     tweet_to_audiofeatures_map = {
@@ -336,7 +373,8 @@ def main():
         'speechiness': speechiness,
         'instrumentalness': instrumentalness,
         'liveness': liveness,
-        'acousticness': acousticness
+        'acousticness': acousticness,
+        'popularity': popularity
     }
     print('Tweet to Audio Features mapping:\n', get_mapping(tweet_to_audiofeatures_map))
 
