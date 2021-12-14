@@ -1,4 +1,3 @@
-import pandas as pd
 import requests
 import json
 import datetime
@@ -115,8 +114,6 @@ def analyzeTweet(link):
     processed_tweet_id = process_tweet_link(link)
     tweet_obj = twitter_auth_and_connect(create_twitter_url(processed_tweet_id))
     
-    print(tweet_obj)
-    
     if 'errors' in tweet_obj:
         tweet = None
         tweeter = None
@@ -128,23 +125,14 @@ def analyzeTweet(link):
         positive_sentiment_score, neutral_sentiment_score, negative_sentiment_score = sentiment_analysis(azure_client, text)
 
         # Tweet data
-        tweet_id = tweet_obj['data'][0]['id']
-        tweet_url = create_twitter_url(processed_tweet_id)
         tweet_created_at = tweet_obj['data'][0]['created_at']
         retweet_count = tweet_obj['data'][0]['public_metrics']['retweet_count']
         reply_count = tweet_obj['data'][0]['public_metrics']['reply_count']
         like_count = tweet_obj['data'][0]['public_metrics']['like_count']
-        quote_count = tweet_obj['data'][0]['public_metrics']['quote_count']
 
         # Tweeter data
-        tweeter_id = tweet_obj['includes']['users'][0]['id']
         tweeter_name = tweet_obj['includes']['users'][0]['name']
-        tweeter_username = tweet_obj['includes']['users'][0]['username']
-        tweeter_created_at = tweet_obj['includes']['users'][0]['created_at']
         followers_count = tweet_obj['includes']['users'][0]['public_metrics']['followers_count']
-        following_count = tweet_obj['includes']['users'][0]['public_metrics']['following_count']
-        tweet_count = tweet_obj['includes']['users'][0]['public_metrics']['tweet_count']
-        listed_count = tweet_obj['includes']['users'][0]['public_metrics']['listed_count']
         
         # Handling of emojis in Tweeter username
         emoji_pattern = re.compile("["
