@@ -189,9 +189,7 @@ def playlist(playlist_id):
         song['tweet_url'] = entry[4]
         song['tweet_text'] = entry[5]
         song['tweet_author'] = entry[7]
-        
-        print(song)
-        
+                
         songs.append(song)
 
     if form.validate_on_submit():
