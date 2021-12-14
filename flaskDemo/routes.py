@@ -111,7 +111,6 @@ def home():
                 song = Song(
                     song_id=track['id'],
                     song_uri=track['uri'],
-                    duration_ms=track['duration_ms'],
                     # song_name=track.name
                 )
                 db.session.add(song)
@@ -243,7 +242,6 @@ def playlist():
                 song = Song(
                     song_id=track['id'],
                     song_uri=track['uri'],
-                    duration_ms=track['duration_ms'],
                     # song_name=track.name
                 )
                 db.session.add(song)

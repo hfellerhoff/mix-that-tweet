@@ -100,6 +100,7 @@ ALTER TABLE Song
   DROP COLUMN speechiness,
   DROP COLUMN tempo,
   DROP COLUMN valence;
+  DROP COLUMN duration_ms;
 
 INSERT INTO Song
 (
