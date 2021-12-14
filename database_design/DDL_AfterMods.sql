@@ -151,6 +151,6 @@ INSERT INTO Genre (seed_genre, genre_name) VALUES ('honky-tonk', 'Honky Tonk');
 INSERT INTO Genre (seed_genre, genre_name) VALUES ('indie-pop', 'Indie Pop');
 INSERT INTO Genre (seed_genre, genre_name) VALUES ('jazz', 'Jazz');
 INSERT INTO Genre (seed_genre, genre_name) VALUES ('k-pop', 'K-Pop');
-INSERT INTO Genre (seed_genre, genre_name) VALUES ('rock-n-roll', 'RocknRoll');
-INSERT INTO Genre (seed_genre, genre_name) VALUES ('trance', 'trance');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('rock-n-roll', "Rock 'n Roll");
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('trance', 'Trance');
 INSERT INTO Genre (seed_genre, genre_name) VALUES ('opera', 'Opera');
