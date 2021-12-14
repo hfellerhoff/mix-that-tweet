@@ -144,13 +144,14 @@ def analyzeTweet(link):
         )
         
         tweeter_name = emoji_pattern.sub(r'', tweeter_name)
+        tweet_text = emoji_pattern.sub(r'', text)
 
         tweet = {
             'tweet_id': tweet_obj['data'][0]['id'],
             'tweet_url': link,
             'author_id': tweet_obj['includes']['users'][0]['id'],
             'tweet_created_at': tweet_obj['data'][0]['created_at'][0:10],
-            'tweet_text': text,
+            'tweet_text': tweet_text,
             'retweet_count': tweet_obj['data'][0]['public_metrics']['retweet_count'],
             'reply_count': tweet_obj['data'][0]['public_metrics']['reply_count'],
             'like_count': tweet_obj['data'][0]['public_metrics']['like_count'],
