@@ -105,13 +105,11 @@ ALTER TABLE Song
 INSERT INTO Song
 (
   song_id,
-  song_uri,
-  duration_ms
+  song_uri
 ) VALUES 
 (
   'song1',
-  'http://song.com/',
-  123
+  'http://song.com/'
 );
 
 INSERT INTO Playlist_Includes_Song
