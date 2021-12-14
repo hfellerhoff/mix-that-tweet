@@ -5,10 +5,11 @@ DELETE FROM Song;
 DELETE FROM Playlist;
 DELETE FROM Tweet;
 
-DROP TABLE CreatedBy;
-DROP TABLE AppUser;
+DROP TABLE IF EXISTS CreatedBy;
+DROP TABLE IF EXISTS AppUser;
 
 DROP TABLE IF EXISTS Tweeter;
+DROP TABLE IF EXISTS Genre;
 
 CREATE TABLE Tweeter
 (
@@ -121,3 +122,19 @@ INSERT INTO Playlist_Includes_Song
   'playlist1',
   'song1'
 );
+
+
+CREATE TABLE Genre
+(
+  seed_genre VARCHAR(50) UNIQUE,
+  genre_name VARCHAR(50),
+  PRIMARY KEY (seed_genre)
+);
+
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('pop', 'Pop');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('country', 'Country');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('r-n-b', 'RnB');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('disney', 'Disney');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('turkish', 'Turkish');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('holidays', 'Holidays');
+INSERT INTO Genre (seed_genre, genre_name) VALUES ('anime', 'Anime');

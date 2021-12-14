@@ -16,7 +16,7 @@ def clamp(value, min_value=0, max_value=1):
     return max(min_value, min(max_value, value))
 
 
-def get_recommendations(attributes):
+def get_recommendations(attributes, genre = 'Pop'):
     # target_acousticness = clamp(attributes['acousticness'], 0, 1),
     # print('target_acousticness:', target_acousticness)
     print('target_danceability:', attributes['danceability'])
@@ -43,7 +43,7 @@ def get_recommendations(attributes):
 
     try:
         results = spotify.recommendations(
-            seed_genres=['pop'],
+            seed_genres=[genre],
             country='US',
             #  use time period somehow
             target_valence=target_valence,
